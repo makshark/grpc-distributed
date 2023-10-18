@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  grpc-server:
+    build:
+      context: .
+      args:
+        - APP_BASE=server
+    command: bash -c "rm -f /tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0' --pid `pwd`/`hostname`.pid"
+    volumes:
+      - ./server:/srv/app
+    ports:
+      - "8003-8100:3000"
+      - "50051-50090:50051"
+    networks:
+      - grpc-ruby
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  grpc-client:
+    build:
+      context: .
+      args:
+        - APP_BASE=client
+    container_name: grpc-client
+    command: bash -c "rm -f /tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0' --pid `pwd`/`hostname`.pid"
+    volumes:
+      - ./client:/srv/app
+    ports:
+      - "8002:3000"
+    networks:
+      - grpc-ruby
+
+networks:
+  grpc-ruby:
+    external: true

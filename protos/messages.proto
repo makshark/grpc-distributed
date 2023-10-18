@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package messages;
+
+service MessageService {
+    rpc ReplicateMessage (Message) returns (Message) {}
+}
+message Message {
+    int32 id = 1;
+    string title = 2;
+}
